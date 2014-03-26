@@ -72,6 +72,7 @@
                       jQuery('#facebook-notifs').append('<a class="col-lg-12" href="' + response.data[i].link + '" target="_blank"><img class="col-lg-2" src="http://graph.facebook.com/' + response.data[i].from.id + '/picture" /><p class="col-lg-10">' + response.data[i].title + '</p><br>');
                     }
                   }
+                  console.log('Facebook notifications : OK');
                 });
                 FB.api('/me/events?fields=owner,picture,name',
                 function (response) {
@@ -79,6 +80,7 @@
                     for (var i = 0; i < 5; i++) {
                       jQuery('#facebook-events').append('<a class="col-lg-12" href="https://www.facebook.com/events/' + response.data[i].id + '" target="_blank"><img class="col-lg-2" src="' + response.data[i].picture.data.url + '" /><p class="col-lg-10">' + response.data[i].name + '<br><em>' + response.data[i].start_time.substring(0,10) + '</em> by ' + response.data[i].owner.name + '</p><br>');
                     }
+                    console.log('Facebook events : OK');
                   }
                 });
                 FB.api('/me',
@@ -86,17 +88,19 @@
                   if (response && !response.error) {
                     jQuery('#logo-bjr').append('<a href="' + response.link + '" target="_blank">Bonjour, ' + response.first_name + '</a>');
                     jQuery('#overlay').hide();
+                    console.log('Facebook personnal informations : OK');
                   };
                 });
               } else {
                 FB.login(function(){
-                  FB.api('/me/notifications?limit=6',
+                  FB.api('/me/notifications?include_read=true',
                   function (response) {
                     if (response && !response.error) {
                       for (var i = 0; i < 5; i++) {
                         jQuery('#facebook-notifs').append('<a class="col-lg-12" href="' + response.data[i].link + '" target="_blank"><img class="col-lg-2" src="http://graph.facebook.com/' + response.data[i].from.id + '/picture" /><p class="col-lg-10">' + response.data[i].title + '</p><br>');
                       }
                     }
+                    console.log('Facebook notifications : OK');
                   });
                   FB.api('/me/events?fields=owner,picture,name',
                   function (response) {
@@ -104,6 +108,7 @@
                       for (var i = 0; i < 5; i++) {
                         jQuery('#facebook-events').append('<a class="col-lg-12" href="https://www.facebook.com/events/' + response.data[i].id + '" target="_blank"><img class="col-lg-2" src="' + response.data[i].picture.data.url + '" /><p class="col-lg-10">' + response.data[i].name + '<br><em>' + response.data[i].start_time.substring(0,10) + '</em> by ' + response.data[i].owner.name + '</p><br>');
                       }
+                      console.log('Facebook events : OK');
                     }
                   });
                   FB.api('/me',
@@ -111,6 +116,7 @@
                     if (response && !response.error) {
                       jQuery('#logo-bjr').append('<a href="' + response.link + '" target="_blank">Bonjour, ' + response.first_name + '</a>');
                       jQuery('#overlay').hide();
+                      console.log('Facebook personnal informations : OK');
                     };
                   });
                 }, {scope: 'manage_notifications,user_events'});

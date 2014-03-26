@@ -61,16 +61,8 @@ window.addEvent('domready',function() {
     }
   };
   $('search-box').addEvent('focus',searchFn);
+  console.log('Google Search : OK');
 })
-
-jQuery('#search-box').keypress(function(e) {
-    var code = (e.keyCode ? e.keyCode : e.which);
-    console.log('grosse barre !');
-    console.log(e.keyCode);
-    if(code == 13) { //Enter keycode
-      jQuery('#ui-id-1').css('display', 'none');
-    }
-});
 
 window.addEvent('onload', initialize())
 
@@ -110,12 +102,14 @@ function codeLatLng(lat, lng) {
           for (var b=0;b<results[0].address_components[i].types.length;b++) {
             if (results[0].address_components[i].types[b] == 'locality') {
               city = results[0].address_components[i];
+              console.log('Geolocalisation : OK');
               break;
             }
           }
         }
         var date = displayDate();
         jQuery('#logo-bjr').append('<span id="whatsup">What\'s up in <b>' + city.short_name + '</b> on this wonderful <b>' + date + '</b>');
+        console.log('Date displaying : OK');
       }
     }
   });
@@ -144,6 +138,7 @@ function displayDate() {
     success: function(response) {
       //nameday = response[0].name;
       jQuery('#whatsup').append(' (St ' + response[0].name + ') ?');
+      console.log('NameDay : OK');
     }
   });
 
@@ -165,8 +160,6 @@ function displayDate() {
   weekday[4] = 'Thursday';
   weekday[5] = 'Friday';
   weekday[6] = 'Saturday';
-
-  console.log('lol' + nameday);
 
   return (weekday[today.getDay()] + ', ' + dd);
 }
