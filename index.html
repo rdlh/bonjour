@@ -2,13 +2,15 @@
 <html>
   <head>
     <meta charset="utf-8">
-    <title>Bonjour, Rémi</title>
+    <title>Bonjour</title>
     <link rel="stylesheet" href="http://s.codepen.io/assets/reset/normalize.css">
     <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" type="text/css" charset="utf-8">
-    <link rel="stylesheet" href="css/style.css" type="text/css" media="screen" charset="utf-8">
     <link href='http://fonts.googleapis.com/css?family=Lato:400,100,100italic,300,300italic,400italic,700,700italic,900,900italic' rel='stylesheet' type='text/css'>
-	  <link href='http://fonts.googleapis.com/css?family=Roboto+Slab:400,100,300,700' rel='stylesheet' type='text/css'>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
+    <link href='http://fonts.googleapis.com/css?family=Roboto+Slab:400,100,300,700' rel='stylesheet' type='text/css'>
+    <link type="text/css" rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/themes/smoothness/jquery-ui.css" />
+    <link rel="stylesheet" href="css/style.css" type="text/css" media="screen" charset="utf-8">
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>
     <script>var jQuery = jQuery.noConflict();</script>
 	  <script type="text/javascript" src="http://davidwalsh.name/demo/mootools-1.2.4.js"></script>
     <script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?sensor=false"></script>
@@ -24,14 +26,13 @@
     </div>
     <div class="wrapper">
       <div class="container">
-        <header>
-          <div id="logo-bjr" class="logo">
+        <header class="row">
+          <div id="logo-bjr" class="logo col-lg-12">
           </div>
         </header>
+
         <div class="search">
-
       		<input type="text" id="search-box" name="q" results="5" placeholder="Recherche..." class="col-lg-12" autocomplete="off" />
-
         </div>
         <div id="search-area-custom"></div>
 
@@ -39,74 +40,111 @@
           <div class="facebook col-lg-6">
             <span>What's up on Facebook ?</span>
             <div id="facebook-notifs">
-
+            </div>
+          </div>
+          <div class="facebook col-lg-6">
+            <span>Upcoming events</span>
+            <div id="facebook-events">
             </div>
           </div>
         </div>
-      </div>
 
-      <script type="text/javascript" src="http://www.google.com/jsapi?hl=fr"></script>
-      <script type="text/javascript">
-      	google.load('search','1');
-      </script>
+        <script type="text/javascript" src="http://www.google.com/jsapi?hl=fr"></script>
+        <script type="text/javascript">
+        	google.load('search','1');
+        </script>
 
-      <div id="fb-root"></div>
+        <div id="fb-root"></div>
 
-      <script type="text/javascript" charset="utf-8">
-        window.fbAsyncInit = function() {
-          FB.init({
-            appId      : '477109555724069',
-            status     : true,
-            xfbml      : true
-          });
-          FB.getLoginStatus(function(response) {
-            if (response.status === 'connected') {
-              FB.api('/me/notifications?limit=6',
-              function (response) {
-                if (response && !response.error) {
-                  for (var i = 0; i < 6; i++) {
-                    jQuery('#facebook-notifs').append('<a href="' + response.data[i].link + '" target="_blank">' + response.data[i].title + '</strong><br>');
-                  }
-                }
-              });
-              FB.api('/me',
-              function (response) {
-                if (response && !response.error) {
-                  jQuery('#logo-bjr').append('<a href="" target="_blank">Bonjour, ' + response.first_name + '</a>');
-                  jQuery('#overlay').hide();
-                };
-              });
-            } else {
-              FB.login(function(){
-                FB.api('/me/notifications?limit=6',
+        <script type="text/javascript" charset="utf-8">
+          window.fbAsyncInit = function() {
+            FB.init({
+              appId      : '477109555724069',
+              status     : true,
+              xfbml      : true
+            });
+            FB.getLoginStatus(function(response) {
+              if (response.status === 'connected') {
+                FB.api('/me/notifications?include_read=true',
                 function (response) {
                   if (response && !response.error) {
-                    for (var i = 0; i < 6; i++) {
-                      jQuery('#facebook-notifs').append('<a href="' + response.data[i].link + '" target="_blank">' + response.data[i].title + '</strong><br>');
+                    for (var i = 0; i < 5; i++) {
+                      jQuery('#facebook-notifs').append('<a class="col-lg-12" href="' + response.data[i].link + '" target="_blank"><img class="col-lg-2" src="http://graph.facebook.com/' + response.data[i].from.id + '/picture" /><p class="col-lg-10">' + response.data[i].title + '</p><br>');
+                    }
+                  }
+                });
+                FB.api('/me/events?fields=owner,picture,name',
+                function (response) {
+                  if (response && !response.error) {
+                    for (var i = 0; i < 5; i++) {
+                      jQuery('#facebook-events').append('<a class="col-lg-12" href="https://www.facebook.com/events/' + response.data[i].id + '" target="_blank"><img class="col-lg-2" src="' + response.data[i].picture.data.url + '" /><p class="col-lg-10">' + response.data[i].name + '<br><em>' + response.data[i].start_time.substring(0,10) + '</em> by ' + response.data[i].owner.name + '</p><br>');
                     }
                   }
                 });
                 FB.api('/me',
                 function (response) {
                   if (response && !response.error) {
-                    jQuery('#logo-bjr').append('<a href="" target="_blank">Bonjour, ' + response.first_name + '</a>');
+                    jQuery('#logo-bjr').append('<a href="' + response.link + '" target="_blank">Bonjour, ' + response.first_name + '</a>');
                     jQuery('#overlay').hide();
                   };
                 });
-              }, {scope: 'manage_notifications'});
-            }
+              } else {
+                FB.login(function(){
+                  FB.api('/me/notifications?limit=6',
+                  function (response) {
+                    if (response && !response.error) {
+                      for (var i = 0; i < 5; i++) {
+                        jQuery('#facebook-notifs').append('<a class="col-lg-12" href="' + response.data[i].link + '" target="_blank"><img class="col-lg-2" src="http://graph.facebook.com/' + response.data[i].from.id + '/picture" /><p class="col-lg-10">' + response.data[i].title + '</p><br>');
+                      }
+                    }
+                  });
+                  FB.api('/me/events?fields=owner,picture,name',
+                  function (response) {
+                    if (response && !response.error) {
+                      for (var i = 0; i < 5; i++) {
+                        jQuery('#facebook-events').append('<a class="col-lg-12" href="https://www.facebook.com/events/' + response.data[i].id + '" target="_blank"><img class="col-lg-2" src="' + response.data[i].picture.data.url + '" /><p class="col-lg-10">' + response.data[i].name + '<br><em>' + response.data[i].start_time.substring(0,10) + '</em> by ' + response.data[i].owner.name + '</p><br>');
+                      }
+                    }
+                  });
+                  FB.api('/me',
+                  function (response) {
+                    if (response && !response.error) {
+                      jQuery('#logo-bjr').append('<a href="' + response.link + '" target="_blank">Bonjour, ' + response.first_name + '</a>');
+                      jQuery('#overlay').hide();
+                    };
+                  });
+                }, {scope: 'manage_notifications,user_events'});
+              }
+            });
+          };
+
+          (function(d, s, id){
+             var js, fjs = d.getElementsByTagName(s)[0];
+             if (d.getElementById(id)) {return;}
+             js = d.createElement(s); js.id = id;
+             js.src = "//connect.facebook.net/en_US/all.js";
+             fjs.parentNode.insertBefore(js, fjs);
+           }(document, 'script', 'facebook-jssdk'));
+        </script>
+
+        <script>
+        function parseTwit(str)
+        {
+          str = str.replace(/[A-Za-z]+:\/\/[A-Za-z0-9-_]+\.[A-Za-z0-9-_:%&~\?\/.=]+/g,function(s){
+            return s.link(s);
           });
-        };
-
-        (function(d, s, id){
-           var js, fjs = d.getElementsByTagName(s)[0];
-           if (d.getElementById(id)) {return;}
-           js = d.createElement(s); js.id = id;
-           js.src = "//connect.facebook.net/en_US/all.js";
-           fjs.parentNode.insertBefore(js, fjs);
-         }(document, 'script', 'facebook-jssdk'));
-      </script>
-
+          str = str.replace(/[@]+[A-Za-z0-9_]+/g,function(s){
+            var user_name = s.replace('@','');
+            return s.link("http://twitter.com/"+user_name);
+          });
+          str = str.replace(/[#]+[A-Za-z0-9_]+/g,function(s){
+            var hashtag = s.replace('#','');
+            return s.link("http://search.twitter.com/search?q="+hashtag);
+          });
+          return str;
+        }
+        </script>
+      </div>
     </div>
   </body>
 </html>

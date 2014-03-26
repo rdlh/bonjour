@@ -33,10 +33,23 @@ window.addEvent('domready',function() {
               url: 'http://suggestqueries.google.com/complete/search?client=chrome&q=' + searchBox.value,
               dataType: 'jsonp',
               success: function(data) {
-                console.log(data);
+                var autocompleteData = [];
+                for (var i = 3; i >= 0; i--) {
+                  if(i < data[1].length - 1) {
+                    autocompleteData.push(data[1][i])
+                  }
+                }
+                jQuery('#search-box').autocomplete({
+                  source : autocompleteData,
+                  minLength:1,
+                  select: function( event, ui ) {
+                  console.log( ui.item ?
+                    "Selected: " + ui.item.value + " aka " + ui.item.id :
+                    "Nothing selected, input was " + this.value );
+                  }
+                });
               }
             });
-            control.execute(searchBox.value);
           }
           else {
             container.fade(0);
@@ -49,6 +62,15 @@ window.addEvent('domready',function() {
   };
   $('search-box').addEvent('focus',searchFn);
 })
+
+jQuery('#search-box').keypress(function(e) {
+    var code = (e.keyCode ? e.keyCode : e.which);
+    console.log('grosse barre !');
+    console.log(e.keyCode);
+    if(code == 13) { //Enter keycode
+      jQuery('#ui-id-1').css('display', 'none');
+    }
+});
 
 window.addEvent('onload', initialize())
 
@@ -71,6 +93,11 @@ function errorFunction(){
 
 function initialize() {
   geocoder = new google.maps.Geocoder();
+  //displayTwitter();
+}
+
+function displayTwitter() {
+
 }
 
 function codeLatLng(lat, lng) {
@@ -78,7 +105,6 @@ function codeLatLng(lat, lng) {
   var latlng = new google.maps.LatLng(lat, lng);
   geocoder.geocode({'latLng': latlng}, function(results, status) {
     if (status == google.maps.GeocoderStatus.OK) {
-    console.log(results)
       if (results[1]) {
         for (var i=0; i<results[0].address_components.length; i++) {
           for (var b=0;b<results[0].address_components[i].types.length;b++) {
@@ -88,8 +114,59 @@ function codeLatLng(lat, lng) {
             }
           }
         }
-        jQuery('#logo-bjr').append('<span>What\'s up in ' + city.short_name + ' ?</span>')
+        var date = displayDate();
+        jQuery('#logo-bjr').append('<span id="whatsup">What\'s up in <b>' + city.short_name + '</b> on this wonderful <b>' + date + '</b>');
       }
     }
   });
+}
+
+function displayDate() {
+  var today   = new Date();
+  var dd      = today.getDate();
+  var mm      = today.getMonth()+1; //January is 0!
+  var yyyy    = today.getFullYear();
+  var nameday = '';
+
+  if (dd < 10) {
+    dd = '0' + dd;
+  }
+
+  if (mm < 10) {
+    mm = '0' + mm
+  }
+
+  jQuery.ajax({
+    async: false,
+    url: 'http://nameday.tiste.io/namedays/' + yyyy + '' + mm + '' + dd + '.json',
+    jsonpCallback: 'nameday',
+    dataType: "jsonp",
+    success: function(response) {
+      //nameday = response[0].name;
+      jQuery('#whatsup').append(' (St ' + response[0].name + ') ?');
+    }
+  });
+
+  if(dd == 1) {
+    dd = dd + 'st';
+  } else if (dd == 2) {
+    dd = dd + 'nd';
+  } else if (dd == 3) {
+    dd = dd + 'rd';
+  } else {
+    dd = dd + 'th'
+  }
+
+  var weekday = new Array(7);
+  weekday[0] = 'Sunday';
+  weekday[1] = 'Monday';
+  weekday[2] = 'Tuesday';
+  weekday[3] = 'Wednesday';
+  weekday[4] = 'Thursday';
+  weekday[5] = 'Friday';
+  weekday[6] = 'Saturday';
+
+  console.log('lol' + nameday);
+
+  return (weekday[today.getDay()] + ', ' + dd);
 }
